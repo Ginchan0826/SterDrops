@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星の落とし物：ホログラム・スタビライザー</title>
+<style>
+  /* 全体のスタイル */
+  body {
+    background-color: #050b14;
+    color: #e0f7fa;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 20px;
+  }
+  #app {
+    width: 100%;
+    max-width: 400px;
+    background: #0d1b2a;
+    border: 1px solid #00f0ff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    overflow: hidden;
+    position: relative;
+  }
+  h1 {
+    text-align: center;
+    font-size: 18px;
+    background: #002840;
+    margin: 0;
+    padding: 15px;
+    border-bottom: 1px solid #00f0ff;
+    color: #00f0ff;
+  }
+  .section { padding: 15px; border-bottom: 1px dashed #1b4965; }
+  
+  /* ウェーブ情報 */
+  .wave-info h2 { margin: 0 0 5px; font-size: 16px; color: #ff9e00; }
+  .wave-desc { font-size: 13px; color: #a2d2ff; margin-bottom: 10px; min-height: 38px;}
+  .req-stats { display: flex; gap: 10px; font-weight: bold; font-size: 14px; }
+  .req-stats span { background: #1b4965; padding: 4px 8px; border-radius: 4px; }
+
+  /* ステータス表示 */
+  .current-stats { background: #001a2c; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #00f0ff;}
+  .stats-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;}
+  .synergy-box { color: #ffea00; font-size: 14px; font-weight: bold; text-align: center; margin-top: 10px; min-height: 20px;}
+
+  /* キャラクター・スロット */
+  .slots, .roster { display: flex; gap: 10px; justify-content: center; min-height: 100px;}
+  
+  .char-btn {
+    width: 75px; height: 95px; border-radius: 8px;
+    background: #1b4965; border: 2px solid #00f0ff;
+    color: white; font-weight: bold; font-size: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s;
+    position: relative; /* ツールチップの基準点 */
+  }
+  .char-btn:hover { background: #2c7da0; transform: scale(1.05); }
+  .char-btn.empty { background: rgba(0,0,0,0.5); border: 2px dashed #5c6bc0; cursor: default; height: 95px;}
+  .char-btn.disabled { opacity: 0.3; pointer-events: none; border-color: #555;}
+  
+  /* 画像アイコンの設定 */
+  .char-img {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    object-fit: cover; /* 画像をはみ出させずに丸く切り抜く */
+    border: 2px solid #00f0ff;
+    margin-bottom: 4px;
+    background-color: #000;
+  }
+
+  /* ツールチップ（ステータス表示） */
+  .tooltip {
+    display: none; /* デフォルトは非表示 */
+    position: absolute;
+    bottom: 105%; /* ボタンの真上に配置 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 20, 40, 0.95);
+    color: #e0f7fa;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    border: 1px solid #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+    z-index: 10;
+    pointer-events: none;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .char-btn:hover .tooltip {
+    display: block; /* カーソルを当てると表示 */
+  }
+
+  /* アクションボタン */
+  .action-btn {
+    width: 100%; padding: 15px; font-size: 18px; font-weight: bold;
+    background: #00f0ff; color: #000; border: none; cursor: pointer;
+    transition: 0.3s;
+  }
+  .action-btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+  .action-btn:hover:not(:disabled) { background: #00c4cc; }
+
+  /* ログ表示 */
+  #log {
+    padding: 15px; font-size: 14px; background: #000; min-height: 80px;
+    color: #00ff00; font-family: monospace; white-space: pre-wrap;
+    line-height: 1.5;
+  }
+  
+  .clear-text {
+    color: #ffea00 !important;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <h1>ホログラム・スタビライザー</h1>
+  
+  <div class="section wave-info">
+    <h2 id="wave-name">システム起動中...</h2>
+    <div id="wave-desc" class="wave-desc"></div>
+    <div class="req-stats">
+      <span>共感: <span id="req-emp">0</span></span>
+      <span>解析: <span id="req-ana">0</span></span>
+      <span>拡散: <span id="req-dif">0</span></span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="current-stats">
+      <div class="stats-row">
+        <span>現在値 ➔ 共感: <span id="cur-emp">0</span></span>
+        <span>解析: <span id="cur-ana">0</span></span>
+        <span>拡散: <span id="cur-dif">0</span></span>
+      </div>
+      <div id="synergy-display" class="synergy-box">シナジー：なし</div>
+    </div>
+
+    <div style="text-align:center; font-size:12px; margin-bottom:10px;">▼ 出撃スロット (タップで解除) ▼</div>
+    <div class="slots" id="slots-container">
+      <div class="char-btn empty">枠1</div>
+      <div class="char-btn empty">枠2</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div style="text-align:center; font-size:12px; margin-bottom:10px;">▼ 待機メンバー (ホバーで詳細 / タップで編成) ▼</div>
+    <div class="roster" id="roster-container">
+      </div>
+  </div>
+
+  <button id="stabilize-btn" class="action-btn" disabled>安定化を実行！</button>
+  
+  <div id="log">システム準備完了...<br>ミッションを開始します。</div>
+</div>
+
+<script>
+// --- データ定義 ---
+// 画像のファイル名を設定（HTMLファイルと同じ階層に置いてください）
+const characters = {
+  ruka: { id: "ruka", name: "ルカ", image: "ルカ.png", empathy: 50, analysis: 10, diffusion: 20 },
+  touya: { id: "touya", name: "トウヤ", image: "トウヤ.png", empathy: 10, analysis: 60, diffusion: 10 },
+  kaito: { id: "kaito", name: "カイト", image: "カイト.png", empathy: 20, analysis: 10, diffusion: 60 },
+  nova: { id: "nova", name: "ノヴァ", image: "ノヴァ.png", empathy: 60, analysis: 0, diffusion: 30 }
+};
+
+const synergies = {
+  "nova_ruka": { name: "星の共鳴", bonus: { empathy: 40, analysis: 0, diffusion: 0 } },
+  "kaito_touya": { name: "世界同時ハッキング", bonus: { empathy: 0, analysis: 20, diffusion: 20 } },
+  "ruka_touya": { name: "幼馴染の絆", bonus: { empathy: 10, analysis: 10, diffusion: 10 } },
+  "nova_touya": { name: "深層データ解析", bonus: { empathy: 0, analysis: 40, diffusion: 0 } },
+  "kaito_nova": { name: "銀河系ライブ配信", bonus: { empathy: 0, analysis: 0, diffusion: 40 } },
+  "kaito_ruka": { name: "奇跡の目撃者", bonus: { empathy: 15, analysis: 0, diffusion: 15 } }
+};
+
+// 全8ウェーブに拡張
+const waves = [
+  { num: 1, name: "初期ホログラム・ノイズ", desc: "謎の立体映像が出現。まずはデータの構造を把握しよう。", req: { empathy: 0, analysis: 60, diffusion: 0 } },
+  { num: 2, name: "感情のフラッド", desc: "ノヴァから悲しみと焦りのシグナル。システム暴走前に受け止めろ。", req: { empathy: 80, analysis: 0, diffusion: 0 } },
+  { num: 3, name: "局地的な存在減衰", desc: "維持エネルギーが足りない。認識を集めて存在を固定化しろ。", req: { empathy: 0, analysis: 0, diffusion: 80 } },
+  { num: 4, name: "複雑性暗号化とパニック", desc: "解析しつつ、周囲へのフォローも必要だ。", req: { empathy: 30, analysis: 60, diffusion: 30 } },
+  { num: 5, name: "グローバル・アクセス", desc: "解析データを世界中のサーバーに分散させて負荷を減らせ！", req: { empathy: 0, analysis: 80, diffusion: 80 } },
+  { num: 6, name: "共感ネットワーク", desc: "単なる映像ではなく「心」があることを世界へ届けろ！", req: { empathy: 80, analysis: 0, diffusion: 90 } },
+  { num: 7, name: "コア・ディレクトリ突破", desc: "システム最深部。強引な解析でノヴァの真のメッセージを引き出せ。", req: { empathy: 60, analysis: 100, diffusion: 0 } },
+  { num: 8, name: "星への帰還", desc: "最終局面。溢れ出す彼女の想いを、全て受け止めろ――！", req: { empathy: 150, analysis: 10, diffusion: 50 } }
+];
+
+// --- 状態管理 ---
+let currentWaveIndex = 0;
+let selectedParty = [];
+
+// --- UI更新処理 ---
+function init() {
+  renderWave();
+  renderRoster();
+  updateUI();
+}
+
+function renderWave() {
+  if(currentWaveIndex >= waves.length) {
+    // 8ウェーブクリア時の処理
+    document.getElementById("wave-name").innerText = "MISSION COMPLETE";
+    document.getElementById("wave-desc").innerText = "すべてのホログラム暴走を鎮静化しました。";
+    document.getElementById("req-emp").innerText = "-";
+    document.getElementById("req-ana").innerText = "-";
+    document.getElementById("req-dif").innerText = "-";
+    
+    const logDiv = document.getElementById("log");
+    logDiv.innerHTML = `<span class="clear-text">GAME CLEAR!!<br>ホログラムは完全に安定し、<br>星のメッセージは世界に届いた――。</span>`;
+    document.getElementById("stabilize-btn").disabled = true;
+    document.getElementById("stabilize-btn").innerText = "クリア！";
+    return;
+  }
+  const wave = waves[currentWaveIndex];
+  document.getElementById("wave-name").innerText = `ウェーブ${wave.num}: ${wave.name}`;
+  document.getElementById("wave-desc").innerText = wave.desc;
+  document.getElementById("req-emp").innerText = wave.req.empathy;
+  document.getElementById("req-ana").innerText = wave.req.analysis;
+  document.getElementById("req-dif").innerText = wave.req.diffusion;
+}
+
+// ツールチップHTMLを生成する関数
+function createTooltip(char) {
+  return `
+    <div class="tooltip">
+      <b>${char.name}</b><br>
+      ♥ 共感: ${char.empathy}<br>
+      💻 解析: ${char.analysis}<br>
+      📡 拡散: ${char.diffusion}
+    </div>
+  `;
+}
+
+function renderRoster() {
+  const container = document.getElementById("roster-container");
+  container.innerHTML = "";
+  Object.values(characters).forEach(char => {
+    const isSelected = selectedParty.includes(char.id);
+    const btn = document.createElement("div");
+    btn.className = `char-btn ${isSelected ? 'disabled' : ''}`;
+    
+    // 立ち絵画像とツールチップを設定
+    btn.innerHTML = `
+      <img src="${char.image}" alt="${char.name}" class="char-img">
+      <div>${char.name}</div>
+      ${createTooltip(char)}
+    `;
+    
+    if (!isSelected) btn.onclick = () => selectChar(char.id);
+    container.appendChild(btn);
+  });
+}
+
+function renderSlots() {
+  const container = document.getElementById("slots-container");
+  container.innerHTML = "";
+  for (let i = 0; i < 2; i++) {
+    const charId = selectedParty[i];
+    const btn = document.createElement("div");
+    if (charId) {
+      const char = characters[charId];
+      btn.className = "char-btn";
+      
+      // 出撃スロットにも画像とツールチップを設定
+      btn.innerHTML = `
+        <img src="${char.image}" alt="${char.name}" class="char-img">
+        <div>${char.name}</div>
+        ${createTooltip(char)}
+      `;
+      btn.onclick = () => deselectChar(charId);
+    } else {
+      btn.className = "char-btn empty";
+      btn.innerText = `枠${i+1}`;
+    }
+    container.appendChild(btn);
+  }
+}
+
+function selectChar(id) {
+  if (selectedParty.length < 2) {
+    selectedParty.push(id);
+    updateUI();
+  }
+}
+
+function deselectChar(id) {
+  selectedParty = selectedParty.filter(c => c !== id);
+  updateUI();
+}
+
+// ステータスとシナジーの計算
+function calculateStats() {
+  let stats = { empathy: 0, analysis: 0, diffusion: 0 };
+  let synergyText = "シナジー：なし";
+
+  if (selectedParty.length > 0) {
+    selectedParty.forEach(id => {
+      stats.empathy += characters[id].empathy;
+      stats.analysis += characters[id].analysis;
+      stats.diffusion += characters[id].diffusion;
+    });
+  }
+
+  if (selectedParty.length === 2) {
+    const key = [...selectedParty].sort().join('_');
+    if (synergies[key]) {
+      const syn = synergies[key];
+      synergyText = `🌟 シナジー発動: 【${syn.name}】`;
+      stats.empathy += syn.bonus.empathy;
+      stats.analysis += syn.bonus.analysis;
+      stats.diffusion += syn.bonus.diffusion;
+    }
+  }
+  return { stats, synergyText };
+}
+
+function updateUI() {
+  renderSlots();
+  renderRoster();
+  
+  const { stats, synergyText } = calculateStats();
+  document.getElementById("cur-emp").innerText = stats.empathy;
+  document.getElementById("cur-ana").innerText = stats.analysis;
+  document.getElementById("cur-dif").innerText = stats.diffusion;
+  document.getElementById("synergy-display").innerText = synergyText;
+  document.getElementById("synergy-display").style.color = selectedParty.length === 2 ? "#00f0ff" : "#777";
+
+  document.getElementById("stabilize-btn").disabled = selectedParty.length !== 2;
+}
+
+// 判定処理
+document.getElementById("stabilize-btn").onclick = () => {
+  const { stats } = calculateStats();
+  const wave = waves[currentWaveIndex];
+  const logDiv = document.getElementById("log");
+  
+  let isClear = stats.empathy >= wave.req.empathy && 
+                stats.analysis >= wave.req.analysis && 
+                stats.diffusion >= wave.req.diffusion;
+
+  if (isClear) {
+    logDiv.style.color = "#00ff00";
+    logDiv.innerText = `【SUCCESS】\nウェーブ${wave.num}の安定化に成功しました！\n次へ進みます...`;
+    currentWaveIndex++;
+    selectedParty = []; // 編成リセット
+    
+    // 0.5秒後にUIを更新
+    setTimeout(() => { 
+      init(); 
+      if(currentWaveIndex < waves.length) {
+        logDiv.innerText = "次の異常事態が発生しました。\n適切な編成を行ってください。"; 
+      }
+    }, 1500);
+  } else {
+    logDiv.style.color = "#ff4444";
+    let msg = `【FAILED】安定化失敗！ノイズが増大！\n`;
+    if (stats.empathy < wave.req.empathy) msg += `・「共感」が ${wave.req.empathy - stats.empathy} 不足\n`;
+    if (stats.analysis < wave.req.analysis) msg += `・「解析」が ${wave.req.analysis - stats.analysis} 不足\n`;
+    if (stats.diffusion < wave.req.diffusion) msg += `・「拡散」が ${wave.req.diffusion - stats.diffusion} 不足\n`;
+    logDiv.innerText = msg;
+  }
+  updateUI();
+};
+
+// ゲーム開始
+init();
+</script>
+</body>
+</html>
