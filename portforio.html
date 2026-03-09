@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星の落とし物 - SterDrops - | 桐 銀佑 Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* --- 基本設定 --- */
+  :root {
+    --primary-color: #00f0ff;
+    --bg-dark: #050b14;
+    --text-main: #e0f7fa;
+    --text-sub: #a2d2ff;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text-main);
+    background: linear-gradient(180deg, #020111 0%, #0d1b2a 40%, #1b4965 100%);
+    background-attachment: fixed;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* --- 宇宙と海の背景エフェクト --- */
+  .stars {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)), radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0,0,0,0));
+    background-size: 200px 200px;
+    opacity: 0.3;
+    z-index: -1;
+    animation: twinkle 5s infinite linear;
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+    100% { opacity: 0.2; }
+  }
+
+  /* --- レイアウト --- */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  section {
+    padding: 80px 0;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+  }
+  
+  /* --- タイトル・見出し --- */
+  h1, h2, h3 {
+    font-family: 'Cinzel', 'Noto Sans JP', serif;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  h2 {
+    font-size: 28px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    margin-bottom: 40px;
+  }
+
+  /* --- Hero セクション --- */
+  .hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: none;
+  }
+  .hero-title {
+    font-size: 48px;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 20px var(--primary-color);
+  }
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--text-sub);
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+  }
+  .catchphrase {
+    font-size: 18px;
+    font-weight: 300;
+    background: rgba(0, 20, 40, 0.6);
+    padding: 15px 30px;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  }
+
+  /* --- プロフィール --- */
+  .profile-box {
+    background: rgba(13, 27, 42, 0.8);
+    padding: 30px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+  }
+  
+  /* --- 動画埋め込み --- */
+  .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+  }
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+  }
+
+  /* --- キャラクター --- */
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  .char-card {
+    background: rgba(0, 26, 44, 0.7);
+    border: 1px solid #1b4965;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    transition: 0.3s;
+  }
+  .char-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+  }
+  .char-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid var(--primary-color);
+  }
+  .char-info { padding: 15px; }
+  .char-name { font-size: 20px; font-weight: bold; color: var(--primary-color); margin: 0 0 10px 0;}
+  .char-desc { font-size: 13px; color: var(--text-sub); text-align: left;}
+
+  /* --- 画像ギャラリー（絵コンテ） --- */
+  .storyboard-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+  }
+
+  /* --- リンクボタン --- */
+  .btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: transparent;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid var(--primary-color);
+    border-radius: 30px;
+    transition: 0.3s;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .btn:hover {
+    background: var(--primary-color);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+  }
+  .center-btn { text-align: center; }
+
+  /* --- ツール紹介 --- */
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+  }
+  .tools-list li {
+    background: rgba(27, 73, 101, 0.6);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    border: 1px solid #a2d2ff;
+  }
+
+  /* --- フッター --- */
+  footer {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 14px;
+    color: #5c6bc0;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<section class="hero container">
+  <h1 class="hero-title">星の落とし物</h1>
+  <div class="hero-subtitle">SterDrops</div>
+  <div class="catchphrase">「静かな海辺の出会いが、一瞬で世界へ拡散される――。」</div>
+</section>
+
+<section class="container" id="story">
+  <h2>Story & Concept</h2>
+  <p>本作のテーマは「AIと人」、そして「現代の拡散（SNS）」です。<br>
+  遠い星からの静かで幻想的なSOSが、現代のライブ配信文化によって瞬く間に世界中へ広がっていく様子を、美しくもスリリングなSFファンタジーとして描き出します。</p>
+  <div class="profile-box" style="margin-top: 30px;">
+    <strong>【あらすじ】</strong><br>
+    退屈な日常を送る少女ルカが、海辺で青く光る奇妙な巻貝を拾い、ホログラムの少女「ノヴァ」と出会います。理系の幼馴染であるトウヤがそのデータ解析を試みる中、ホログラムが暴走し夜空を覆い尽くしてしまいます。そこへ居合わせた配信者のカイトが異常事態をライブ配信してしまい、ルカたちの秘密が一瞬にして世界へ拡散されてしまいます。
+  </div>
+</section>
+
+<section class="container" id="movie">
+  <h2>Animation Movie</h2>
+  <div class="video-wrapper">
+    <iframe src="https://youtu.be/IK7w1f5VYr0?si=Z_hcBwxDNwjNq_5a" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+</section>
+
+<section class="container" id="characters">
+  <h2>Characters</h2>
+  <div class="char-grid">
+    <div class="char-card">
+      <img src="ルカ.png" alt="ルカ" class="char-img">
+      <div class="char-info">
+        <h3 class="char-name">ルカ</h3>
+        <p class="char-desc">物語の主人公。心で寄り添おうとする心優しい少女。ある日海岸で光る貝殻を見つける。</p>
+      </div>
+    </div>
+    <div class="char-card">
+      <img src="トウヤ.png" alt="トウヤ" class="char-img">
+      <div class="char-info">
+        <h3 class="char-name">トウヤ</h3>
+        <p class="char-desc">ルカの幼馴染。何に関しても技術で解明しようとする理系の青年。貝殻の解析をルカに頼まれる。</p>
+      </div>
+    </div>
+    <div class="char-card">
+      <img src="ノヴァ.png" alt="ノヴァ" class="char-img">
+      <div class="char-info">
+        <h3 class="char-name">ノヴァ</h3>
+        <p class="char-desc">遠い星からSOSを発信する、謎に包まれたホログラムの少女。</p>
+      </div>
+    </div>
+    <div class="char-card">
+      <img src="カイト.png" alt="カイト" class="char-img">
+      <div class="char-info">
+        <h3 class="char-name">カイト</h3>
+        <p class="char-desc">事態を面白がって広める、テンションの高い動画配信者。この町では少し厄介な存在。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="app">
+  <h2>Web Application</h2>
+  <p style="text-align: center;">アニメの世界観を拡張するブラウザゲーム『ホログラム・スタビライザー』を独自開発しました。<br>状況に合わせてキャラクターを出撃させる戦略編成ゲームです。</p>
+  <div class="center-btn">
+    <a href="https://ginchan0826.github.io/SterDrops/game.html" target="_blank" class="btn">Play Game (Web App)</a>
+  </div>
+</section>
+
+<section class="container" id="storyboard">
+  <h2>Storyboard</h2>
+  <p style="text-align: center;">映像制作の基盤となったオリジナルの絵コンテです。</p>
+  <img src="storyboard.jpg" alt="絵コンテ画像" class="storyboard-img" onerror="this.style.display='none';">
+</section>
+
+<section class="container" id="making">
+  <h2>Making & Tools</h2>
+  <p>本作は、画像・動画・音楽など複数の生成AI技術と、独自の手作業を掛け合わせて制作しました。<br>
+  動画生成AIの出力精度を高めるために英語でのプロンプト調整を重ねる一方、AIにすべてを依存するのではなく、思い通りのカメラワークや間を作るための細かな動画編集は自身で行っています。<br>
+  また、アニメ本編だけでなく、作中の設定と連動したWebブラウザゲームを独自にコーディングして開発し、メディアミックスとしての作品の完成度を高めました。</p>
+  
+  <ul class="tools-list">
+    <li>動画生成AI (Veo 等)</li>
+    <li>音声生成AI (ElevenLabs 等)</li>
+    <li>音楽生成AI (Suno / Udio 等)</li>
+    <li>画像生成AI</li>
+    <li>HTML / CSS / JavaScript</li>
+    <li>動画編集ソフト</li>
+  </ul>
+</section>
+
+<section class="container" id="profile">
+  <h2>Creator</h2>
+  <div class="profile-box">
+    <h3 style="text-align: left; margin-top: 0; color: #fff;">桐 銀佑 <span style="font-size:14px; color:var(--text-sub); font-weight:normal;">(Kiri Ginyu)</span></h3>
+    <p>京都コンピュータ学院 情報科学科 所属。<br>
+    趣味はゲーム、プログラミング、動画編集。Webフロントエンド技術とAIを組み合わせた創作活動を行っており、KCG AWARD 2025・2026にて最優秀賞を受賞しました。</p>
+  </div>
+  
+  <div style="margin-top: 50px; text-align: center;">
+    <h3 style="color: var(--primary-color);">Message</h3>
+    <p>作品のご感想やメッセージなどがありましたら、以下のWaveboxよりお気軽にお送りください。</p>
+    <a href="https://wavebox.me/wave/6kmsflgpvx90qos3/" target="_blank" class="btn" style="border-color: #ff9e00; color: #ff9e00;">Waveboxでメッセージを送る</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 桐 銀佑 / SterDrops Project. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
