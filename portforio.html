@@ -8,63 +8,113 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  /* --- 基本設定 --- */
+  /* --- 基本設定 & 変数 --- */
   :root {
     --primary-color: #00f0ff;
+    --primary-glow: rgba(0, 240, 255, 0.6);
     --bg-dark: #050b14;
     --text-main: #e0f7fa;
     --text-sub: #a2d2ff;
   }
   
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     margin: 0;
     padding: 0;
     font-family: 'Noto Sans JP', sans-serif;
     color: var(--text-main);
-    background: linear-gradient(180deg, #020111 0%, #0d1b2a 40%, #1b4965 100%);
-    background-attachment: fixed;
-    line-height: 1.6;
+    background-color: var(--bg-dark);
+    line-height: 1.8;
     overflow-x: hidden;
   }
 
-  /* --- 宇宙と海の背景エフェクト --- */
-  .stars {
+  /* --- リッチな背景演出 --- */
+  .bg-base {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)), radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0,0,0,0));
-    background-size: 200px 200px;
-    opacity: 0.3;
-    z-index: -1;
-    animation: twinkle 5s infinite linear;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: url('背景１.png');
+    background-size: cover;
+    background-position: center;
+    z-index: -3;
   }
-  @keyframes twinkle {
-    0% { opacity: 0.2; }
-    50% { opacity: 0.5; }
-    100% { opacity: 0.2; }
+  .bg-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(180deg, rgba(5,11,20,0.3) 0%, rgba(5,11,20,0.8) 100%);
+    z-index: -2;
+  }
+  .bg-hologram {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: url('背景２.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    mix-blend-mode: screen;
+    z-index: -1;
+    animation: pulseBg 8s infinite alternate ease-in-out;
   }
 
-  /* --- レイアウト --- */
+  @keyframes pulseBg {
+    0% { opacity: 0.1; transform: scale(1); }
+    100% { opacity: 0.25; transform: scale(1.02); }
+  }
+
+  /* --- レイアウト & グラスモーフィズム --- */
   .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 20px;
   }
   section {
-    padding: 80px 0;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+    padding: 100px 0;
+    position: relative;
   }
-  
+  .glass-panel {
+    background: rgba(13, 27, 42, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* --- スクロールアニメーション用クラス --- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   /* --- タイトル・見出し --- */
   h1, h2, h3 {
     font-family: 'Cinzel', 'Noto Sans JP', serif;
     text-align: center;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
   }
   h2 {
-    font-size: 28px;
-    color: var(--primary-color);
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-    margin-bottom: 40px;
+    font-size: 32px;
+    color: var(--text-main);
+    text-shadow: 0 0 15px var(--primary-glow);
+    margin-bottom: 50px;
+    position: relative;
+  }
+  h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: var(--primary-color);
+    margin: 15px auto 0;
+    box-shadow: 0 0 10px var(--primary-color);
   }
 
   /* --- Hero セクション --- */
@@ -75,107 +125,127 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-bottom: none;
   }
   .hero-title {
-    font-size: 48px;
+    font-size: 64px;
     margin: 0 0 10px 0;
-    text-shadow: 0 0 20px var(--primary-color);
+    text-shadow: 0 0 30px var(--primary-glow);
+    letter-spacing: 5px;
+    animation: fadeInDown 1.5s ease-out forwards;
   }
   .hero-subtitle {
-    font-size: 20px;
-    color: var(--text-sub);
-    letter-spacing: 5px;
-    margin-bottom: 30px;
+    font-size: 24px;
+    color: var(--primary-color);
+    letter-spacing: 8px;
+    margin-bottom: 40px;
+    animation: fadeInUp 1.5s ease-out 0.5s forwards;
+    opacity: 0;
   }
   .catchphrase {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 300;
-    background: rgba(0, 20, 40, 0.6);
-    padding: 15px 30px;
-    border: 1px solid var(--primary-color);
-    border-radius: 4px;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    letter-spacing: 2px;
+    animation: fadeInUp 1.5s ease-out 1s forwards;
+    opacity: 0;
+    border-left: 2px solid var(--primary-color);
+    border-right: 2px solid var(--primary-color);
+    padding: 0 20px;
   }
 
-  /* --- プロフィール --- */
-  .profile-box {
-    background: rgba(13, 27, 42, 0.8);
-    padding: 30px;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  
-  /* --- 動画埋め込み --- */
-  .video-wrapper {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
-    height: 0;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(0, 240, 255, 0.3);
-  }
-  .video-wrapper iframe {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* --- キャラクター --- */
   .char-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
   }
   .char-card {
-    background: rgba(0, 26, 44, 0.7);
-    border: 1px solid #1b4965;
-    border-radius: 8px;
+    background: rgba(0, 26, 44, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 12px;
     overflow: hidden;
-    text-align: center;
-    transition: 0.3s;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(5px);
   }
   .char-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-10px);
     border-color: var(--primary-color);
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
   }
   .char-img {
     width: 100%;
-    height: 200px;
+    height: 250px;
     object-fit: cover;
     border-bottom: 2px solid var(--primary-color);
+    transition: transform 0.5s ease;
   }
-  .char-info { padding: 15px; }
-  .char-name { font-size: 20px; font-weight: bold; color: var(--primary-color); margin: 0 0 10px 0;}
-  .char-desc { font-size: 13px; color: var(--text-sub); text-align: left;}
+  .char-card:hover .char-img {
+    transform: scale(1.05);
+  }
+  .char-info { padding: 20px; }
+  .char-name { font-size: 22px; font-weight: bold; color: var(--primary-color); margin: 0 0 10px 0;}
+  .char-desc { font-size: 14px; color: var(--text-sub); text-align: left; margin: 0;}
 
-  /* --- 画像ギャラリー（絵コンテ） --- */
-  .storyboard-img {
-    width: 100%;
-    border-radius: 8px;
+  /* --- 画像ギャラリー（絵コンテ・相関図） --- */
+  .gallery-img-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
     border: 1px solid rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    transition: 0.3s;
+  }
+  .gallery-img-wrapper:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+  }
+  .gallery-img {
+    width: 100%;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  .gallery-img-wrapper:hover .gallery-img {
+    transform: scale(1.02);
   }
 
   /* --- リンクボタン --- */
   .btn {
     display: inline-block;
-    padding: 15px 40px;
+    padding: 16px 45px;
     background: transparent;
     color: var(--primary-color);
     text-decoration: none;
     font-size: 18px;
     font-weight: bold;
     border: 2px solid var(--primary-color);
-    border-radius: 30px;
-    transition: 0.3s;
+    border-radius: 50px;
+    transition: all 0.3s ease;
     text-align: center;
     margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
   }
-  .btn:hover {
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 0; height: 100%;
     background: var(--primary-color);
+    transition: all 0.3s ease;
+    z-index: -1;
+  }
+  .btn:hover::before { width: 100%; }
+  .btn:hover {
     color: #000;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 20px var(--primary-glow);
   }
   .center-btn { text-align: center; }
 
@@ -187,27 +257,38 @@
     justify-content: center;
     list-style: none;
     padding: 0;
+    margin-top: 30px;
   }
   .tools-list li {
-    background: rgba(27, 73, 101, 0.6);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    border: 1px solid #a2d2ff;
+    background: rgba(0, 240, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 15px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: var(--primary-color);
+    transition: 0.3s;
+  }
+  .tools-list li:hover {
+    background: rgba(0, 240, 255, 0.3);
+    transform: translateY(-3px);
   }
 
   /* --- フッター --- */
   footer {
     text-align: center;
-    padding: 40px 0;
+    padding: 50px 0;
     font-size: 14px;
     color: #5c6bc0;
+    border-top: 1px solid rgba(0, 240, 255, 0.1);
+    background: rgba(0,0,0,0.5);
   }
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<div class="bg-base"></div>
+<div class="bg-hologram"></div>
+<div class="bg-overlay"></div>
 
 <section class="hero container">
   <h1 class="hero-title">星の落とし物</h1>
@@ -215,24 +296,37 @@
   <div class="catchphrase">「静かな海辺の出会いが、一瞬で世界へ拡散される――。」</div>
 </section>
 
-<section class="container" id="story">
+<section class="container reveal" id="story">
   <h2>Story & Concept</h2>
-  <p>本作のテーマは「AIと人」、そして「現代の拡散（SNS）」です。<br>
-  遠い星からの静かで幻想的なSOSが、現代のライブ配信文化によって瞬く間に世界中へ広がっていく様子を、美しくもスリリングなSFファンタジーとして描き出します。</p>
-  <div class="profile-box" style="margin-top: 30px;">
-    <strong>【あらすじ】</strong><br>
-    退屈な日常を送る少女ルカが、海辺で青く光る奇妙な巻貝を拾い、ホログラムの少女「ノヴァ」と出会います。理系の幼馴染であるトウヤがそのデータ解析を試みる中、ホログラムが暴走し夜空を覆い尽くしてしまいます。そこへ居合わせた配信者のカイトが異常事態をライブ配信してしまい、ルカたちの秘密が一瞬にして世界へ拡散されてしまいます。
+  <div class="glass-panel">
+    <p style="text-align: center; font-size: 18px; margin-bottom: 30px;">
+      本作のテーマは「AIと人」、そして「現代の拡散（SNS）」です。<br>
+      遠い星からの静かで幻想的なSOSが、現代のライブ配信文化によって瞬く間に世界中へ広がっていく様子を、美しくもスリリングなSFファンタジーとして描き出します。
+    </p>
+    <div style="border-top: 1px dashed rgba(0,240,255,0.3); padding-top: 30px;">
+      <h3 style="color: var(--primary-color); text-align: left; font-size: 20px; letter-spacing: 1px; margin-top:0;">【あらすじ】</h3>
+      <p>退屈な日常を送る少女ルカが、海辺で青く光る奇妙な巻貝を拾い、ホログラムの少女「ノヴァ」と出会います。理系の幼馴染であるトウヤがそのデータ解析を試みる中、ホログラムが暴走し夜空を覆い尽くしてしまいます。そこへ居合わせた配信者のカイトが異常事態をライブ配信してしまい、ルカたちの秘密が一瞬にして世界へ拡散されてしまいます。</p>
+    </div>
   </div>
 </section>
 
-<section class="container" id="movie">
+<section class="container reveal" id="movie">
   <h2>Animation Movie</h2>
-  <div class="video-wrapper">
-    <iframe src="https://youtu.be/IK7w1f5VYr0?si=Z_hcBwxDNwjNq_5a" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <p style="text-align: center; color: var(--text-sub); margin-bottom: 30px;">画像をクリックするとYouTubeでショートアニメーション本編をご視聴いただけます。</p>
+  
+  <div class="center-btn">
+    <a href="https://youtu.be/IK7w1f5VYr0" target="_blank" rel="noopener noreferrer" style="display: block; position: relative; max-width: 800px; margin: 0 auto; text-decoration: none;">
+      <div class="gallery-img-wrapper">
+        <img src="https://img.youtube.com/vi/IK7w1f5VYr0/maxresdefault.png" alt="星の落とし物 アニメーション本編" class="gallery-img">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 56px; background: rgba(0, 240, 255, 0.85); border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px var(--primary-color); transition: 0.3s;" onmouseover="this.style.transform='translate(-50%, -50%) scale(1.1)'; this.style.boxShadow='0 0 30px #00f0ff';" onmouseout="this.style.transform='translate(-50%, -50%) scale(1)'; this.style.boxShadow='0 0 20px #00f0ff';">
+          <div style="width: 0; height: 0; border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-left: 24px solid #000; margin-left: 6px;"></div>
+        </div>
+      </div>
+    </a>
   </div>
 </section>
 
-<section class="container" id="characters">
+<section class="container reveal" id="characters">
   <h2>Characters</h2>
   <div class="char-grid">
     <div class="char-card">
@@ -266,54 +360,96 @@
   </div>
 </section>
 
-<section class="container" id="app">
-  <h2>Web Application</h2>
-  <p style="text-align: center;">アニメの世界観を拡張するブラウザゲーム『ホログラム・スタビライザー』を独自開発しました。<br>状況に合わせてキャラクターを出撃させる戦略編成ゲームです。</p>
-  <div class="center-btn">
-    <a href="https://ginchan0826.github.io/SterDrops/game.html" target="_blank" class="btn">Play Game (Web App)</a>
+<section class="container reveal" id="correlation">
+  <h2>Relationship</h2>
+  <p style="text-align: center; color: var(--text-sub); margin-bottom: 30px;">キャラクター相関図</p>
+  <div class="gallery-img-wrapper" style="max-width: 800px; margin: 0 auto;">
+    <img src="相関図.png" alt="相関図" class="gallery-img">
   </div>
 </section>
 
-<section class="container" id="storyboard">
+<section class="container reveal" id="app">
+  <h2>Web Application</h2>
+  <div class="glass-panel" style="text-align: center;">
+    <h3 style="color: var(--text-main); font-size: 24px; margin-top: 0;">ホログラム・スタビライザー</h3>
+    <p>アニメの世界観を拡張するブラウザゲームを独自開発しました。<br>状況に合わせてキャラクターを2名出撃させる、戦略編成ゲームです。</p>
+    <div class="center-btn">
+      <a href="https://ginchan0826.github.io/SterDrops/game.html" target="_blank" class="btn">Play Game (Web App)</a>
+    </div>
+  </div>
+</section>
+
+<section class="container reveal" id="storyboard">
   <h2>Storyboard</h2>
-  <p style="text-align: center;">映像制作の基盤となったオリジナルの絵コンテです。</p>
-  <img src="storyboard.jpg" alt="絵コンテ画像" class="storyboard-img" onerror="this.style.display='none';">
+  <p style="text-align: center; color: var(--text-sub); margin-bottom: 30px;">映像制作の基盤となったオリジナルの絵コンテ</p>
+  <div class="gallery-img-wrapper">
+    <img src="絵コンテ.png" alt="絵コンテ" class="gallery-img">
+  </div>
 </section>
 
-<section class="container" id="making">
+<section class="container reveal" id="making">
   <h2>Making & Tools</h2>
-  <p>本作は、画像・動画・音楽など複数の生成AI技術と、独自の手作業を掛け合わせて制作しました。<br>
-  動画生成AIの出力精度を高めるために英語でのプロンプト調整を重ねる一方、AIにすべてを依存するのではなく、思い通りのカメラワークや間を作るための細かな動画編集は自身で行っています。<br>
-  また、アニメ本編だけでなく、作中の設定と連動したWebブラウザゲームを独自にコーディングして開発し、メディアミックスとしての作品の完成度を高めました。</p>
-  
-  <ul class="tools-list">
-    <li>動画生成AI (Veo 等)</li>
-    <li>音声生成AI (ElevenLabs 等)</li>
-    <li>音楽生成AI (Suno / Udio 等)</li>
-    <li>画像生成AI</li>
-    <li>HTML / CSS / JavaScript</li>
-    <li>動画編集ソフト</li>
-  </ul>
+  <div class="glass-panel">
+    <p>本作は、画像・動画・音楽など複数の生成AI技術と、独自の手作業を掛け合わせて制作しました。<br>
+    動画生成AIの出力精度を高めるために英語でのプロンプト調整を重ねる一方、AIにすべてを依存するのではなく、思い通りのカメラワークや間を作るための細かな動画編集は自身で行っています。<br>
+    また、アニメ本編だけでなく、作中の設定と連動したWebブラウザゲームを独自にコーディングして開発し、メディアミックスとしての作品の完成度を高めました。</p>
+    
+    <ul class="tools-list">
+      <li>動画生成AI (Veo 等)</li>
+      <li>音声生成AI (ElevenLabs 等)</li>
+      <li>音楽生成AI (Suno / Udio 等)</li>
+      <li>画像生成AI</li>
+      <li>HTML / CSS / JavaScript</li>
+      <li>動画編集ソフト</li>
+    </ul>
+  </div>
 </section>
 
-<section class="container" id="profile">
+<section class="container reveal" id="profile">
   <h2>Creator</h2>
-  <div class="profile-box">
+  <div class="glass-panel">
     <h3 style="text-align: left; margin-top: 0; color: #fff;">桐 銀佑 <span style="font-size:14px; color:var(--text-sub); font-weight:normal;">(Kiri Ginyu)</span></h3>
     <p>京都コンピュータ学院 情報科学科 所属。<br>
     趣味はゲーム、プログラミング、動画編集。Webフロントエンド技術とAIを組み合わせた創作活動を行っており、KCG AWARD 2025・2026にて最優秀賞を受賞しました。</p>
-  </div>
-  
-  <div style="margin-top: 50px; text-align: center;">
-    <h3 style="color: var(--primary-color);">Message</h3>
-    <p>作品のご感想やメッセージなどがありましたら、以下のWaveboxよりお気軽にお送りください。</p>
-    <a href="https://wavebox.me/wave/6kmsflgpvx90qos3/" target="_blank" class="btn" style="border-color: #ff9e00; color: #ff9e00;">Waveboxでメッセージを送る</a>
+    
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(0,240,255,0.2); text-align: center;">
+      <h3 style="color: var(--primary-color); font-size: 20px;">Message</h3>
+      <p style="font-size: 14px;">作品のご感想やメッセージなどがありましたら、以下のWaveboxよりお気軽にお送りください。</p>
+      <a href="https://wavebox.me/wave/6kmsflgpvx90qos3/" target="_blank" class="btn" style="border-color: #ff9e00; color: #ff9e00; padding: 12px 30px; font-size: 16px;">
+        Waveboxでメッセージを送る
+      </a>
+      <style>
+        a[href*="wavebox.me"]:hover::before { background: #ff9e00; }
+        a[href*="wavebox.me"]:hover { box-shadow: 0 0 20px rgba(255, 158, 0, 0.6); color: #000 !important; }
+      </style>
+    </div>
   </div>
 </section>
 
 <footer>
   <p>&copy; 2026 桐 銀佑 / SterDrops Project. All Rights Reserved.</p>
 </footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const reveals = document.querySelectorAll(".reveal");
+
+    const revealOnScroll = function() {
+      const windowHeight = window.innerHeight;
+      const elementVisible = 100; // 発火するタイミング
+
+      reveals.forEach((reveal) => {
+        const elementTop = reveal.getBoundingClientRect().top;
+        if (elementTop < windowHeight - elementVisible) {
+          reveal.classList.add("active");
+        }
+      });
+    };
+
+    window.addEventListener("scroll", revealOnScroll);
+    revealOnScroll(); // 初期ロード時にも実行
+  });
+</script>
 
 </body>
 </html>
